@@ -1,0 +1,1 @@
+<p>{l s='This page has not been configured yet.'}</p>

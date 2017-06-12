@@ -1,0 +1,24 @@
+@mixin transition($property:all, $time: 300, $easing: ease-in) {
+    transition: $property #{$time}ms $easing;
+}
+
+@mixin fancyUnderline($bottom: -2px, $color: #333, $hoverColor: #000) {
+    position:relative;
+    &::before {
+        background:$color;
+        bottom:$bottom;
+        content:"";
+        height:1px;
+        left:0;
+        position:absolute;
+        transform:scaleX(0);
+        transition:all 0.15s linear 0s;
+        visibility:hidden;
+        width:100%;
+    }
+    &:hover::before {
+        visibility:visible;
+        transform:scaleX(1);
+        background:$hoverColor;
+    }
+}
