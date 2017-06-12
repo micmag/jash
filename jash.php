@@ -35,9 +35,15 @@ class Jash extends Module
     if(Shop::isFeatureActive())
       Shop::setContext(Shop::CONTEXT_ALL);
 
+    $langValues = array();
+    $languages = Language::getLanguages(true, $this->context->shop->id);
+    foreach($languages as $language) {
+      $langValues[$language['id_lang']] = '';
+    }
+    
     foreach(JashHelper::getConfigVars() as $variable_name) {
-      Configuration::updateValue($variable_name, '');
-    }    
+      Configuration::updateValue($variable_name, $langValues);
+    }
     $this->_clearCache('*');
     return (parent::install() && $this->registerHook('moduleRoutes'));
   }
@@ -86,8 +92,9 @@ class Jash extends Module
    * Returns the configuration form HTML to be displayed
    */
   private function configForm() {
-    $config_vars = JashHelper::loadConfigVars();
-    $admin_helper = new JashAdminHelper($config_vars);
+    $lang_id = JashHelper::getCurrentLang();
+    $config_vars = JashHelper::loadConfigVars($lang_id);
+    $admin_helper = new JashAdminHelper($config_vars, $lang_id);
     
     $this->context->smarty->assign(array(
       'js_path' => _PS_JS_DIR_,
@@ -96,6 +103,7 @@ class Jash extends Module
       'admin_path' => _PS_ADMIN_DIR_,
       'lang' => $admin_helper->lang,
       'lang_iso' => Language::getIsoById($admin_helper->lang),
+      'lang_list' => JashHelper::getLanguagesList($this->context->shop->id),
       'categories_tree' => $admin_helper->categories,
       'attributes_groups' => $admin_helper->attributes_groups,
       'attributes' => $admin_helper->attributes,
@@ -115,8 +123,9 @@ class Jash extends Module
    * Gets invoked when the user submits the admin form.
    * Validates and updates all the fields.
    */
-  private function processForm() {    
-    $output = '';    
+  private function processForm() {
+    $output = '';
+    $lang_id = (int)Tools::getValue('language_choice');
     $text_inputs = array(
       'JASH_PAGE_TITLE' => array('value' => Tools::getValue('page_title'), 'default' => '', 'html' => false),
       'JASH_PAGE_DESC' => array('value' => Tools::getValue('page_description'), 'default' => '', 'html' => true)
@@ -135,11 +144,11 @@ class Jash extends Module
       $value = !empty($input['value']) ? $input['value'] : $input['default'];
       if($input['html'] == true)
         $value = htmlspecialchars($value);
-      Configuration::updateValue($field_name, $value);
+      Configuration::updateValue($field_name, array($lang_id => $value));
     }
     foreach($array_inputs as $field_name => $input) {
       $value = !empty($input['value']) ? $input['value'] : $input['default'];
-      Configuration::updateValue($field_name, implode(',', $value));
+      Configuration::updateValue($field_name, array($lang_id => implode(',', $value)));
     }
     
     return $this->displayConfirmation($this->l('Settings has been updated'));    

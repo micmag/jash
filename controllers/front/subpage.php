@@ -6,10 +6,12 @@ class JashSubpageModuleFrontController extends ModuleFrontController
 {  
   
   private $config_vars;
+  private $lang_id;
   
   public function __construct() {    
     parent::__construct();
-    $this->config_vars = JashHelper::loadConfigVars();
+    $this->lang_id = JashHelper::getCurrentLang();
+    $this->config_vars = JashHelper::loadConfigVars($this->lang_id);
   }
   
   /**
@@ -47,9 +49,9 @@ class JashSubpageModuleFrontController extends ModuleFrontController
     $query = '
       SELECT DISTINCT p.* , pl.`description_short`, pl.`link_rewrite`, pl.`name`, i.`id_image` AS image_id, t.`rate`
       FROM `'._DB_PREFIX_.'product` p
-      LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (p.`id_product` = pl.`id_product` AND pl.`id_lang` = ' . $this->config_vars['PS_LANG_DEFAULT'] . ')
+      LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (p.`id_product` = pl.`id_product` AND pl.`id_lang` = ' . $this->lang_id . ')
       LEFT JOIN `'._DB_PREFIX_.'image` i ON (i.`id_product` = p.`id_product` AND i.`cover` = 1)
-      LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (i.`id_image` = il.`id_image` AND il.`id_lang` = ' . $this->config_vars['PS_LANG_DEFAULT'] . ')
+      LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (i.`id_image` = il.`id_image` AND il.`id_lang` = ' . $this->lang_id . ')
       LEFT JOIN `'._DB_PREFIX_.'tax` t ON (t.`id_tax` = p.`id_tax_rules_group`)
       LEFT JOIN `'._DB_PREFIX_.'category_product` cp ON (cp.`id_product` = p.`id_product`)';
     if(!empty($this->config_vars['JASH_ATTRIBUTES'])) {
@@ -70,7 +72,7 @@ class JashSubpageModuleFrontController extends ModuleFrontController
       $query .= 'AND p.`id_manufacturer` IN(' . $this->config_vars['JASH_MANUFACTURERS'] . ')';
     }
     $result = Db::getInstance()->ExecuteS($query);
-    return Product::getProductsProperties($this->config_vars['PS_LANG_DEFAULT'], $result);
+    return Product::getProductsProperties($this->lang_id, $result);
   }
   
   /**

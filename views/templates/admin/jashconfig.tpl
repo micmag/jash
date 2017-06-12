@@ -8,6 +8,21 @@
             
             <div class="form-group">
                 <label class="control-label col-lg-3 required">
+                    <span class="label-tooltip" data-html="true" data-toggle="tooltip" data-original-title="{l s='Please choose a language.'}">{l s='Language'}</span>
+                </label>
+                <div class="col-lg-9">
+                    <select name="language_choice" id="language_choice">
+                        {foreach from=$lang_list key=lang_id item=lang_name}
+                            <option value="{$lang_id}">{$lang_name|escape:'html':'UTF-8'}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+                    
+            <hr />
+            
+            <div class="form-group">
+                <label class="control-label col-lg-3 required">
                     <span class="label-tooltip" data-html="true" data-toggle="tooltip" data-original-title="{l s='Please choose a category.'}">{l s='Product categories'}</span>
                 </label>
                 <div class="col-lg-9">{$categories_tree}</div>
@@ -22,11 +37,11 @@
                     </label>
                     <div class="col-lg-6">
                         <select name="attribute_group" id="attribute_group" onchange="populate_options('attr');">
-                        {if isset($attributes_groups)}
+                            {if isset($attributes_groups)}
                                 {foreach from=$attributes_groups key=attr_group_id item=attr_group_name}
                                     <option value="{$attr_group_id}">{$attr_group_name|escape:'html':'UTF-8'}</option>
                                 {/foreach}
-                        {/if}
+                            {/if}
                         </select>
                     </div>
                 </div>

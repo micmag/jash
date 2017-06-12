@@ -17,9 +17,9 @@ class JashAdminHelper
   private $attributes_list;
   private $features_list;
   
-  public function __construct($config_vars){
+  public function __construct($config_vars, $lang_id){
     $this->config_vars = $config_vars;
-    $this->setLang();
+    $this->lang = $lang_id;
     $this->getAttributesList();
     $this->getFeaturesList();
     $this->setCategories();
@@ -30,13 +30,6 @@ class JashAdminHelper
     $this->setFeatures();
     $this->setSelectedFeatures();
     $this->setManufacturers();
-  }
-  
-  /**
-   * Sets the language variable in form of an INT variable
-   */  
-  private function setLang() {
-    $this->lang = (int)$this->config_vars['PS_LANG_DEFAULT'];
   }
   
   /**
